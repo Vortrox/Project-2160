@@ -1,0 +1,31 @@
+Australian Bureau of Statistics
+
+"Motor Vehicle Census, 2014"
+"Fuel type by State"
+"Counting: Vehicles"
+
+Filters:
+"Default Summation","Vehicles (#)"
+
+"State","AUSTRALIAN CAPITAL TERRITORY","AUSTRALIAN CAPITAL TERRITORY - Annotations","NORTHERN TERRITORY","NORTHERN TERRITORY - Annotations","TASMANIA","TASMANIA - Annotations","WESTERN AUSTRALIA","WESTERN AUSTRALIA - Annotations","SOUTH AUSTRALIA","SOUTH AUSTRALIA - Annotations","QUEENSLAND","QUEENSLAND - Annotations","VICTORIA","VICTORIA - Annotations","NEW SOUTH WALES","NEW SOUTH WALES - Annotations","Total","Total - Annotations",
+"Fuel type",
+"Other and unknown",15420,,21286,,102746,,139013,,71742,,378801,,259722,,646798,,1635525,,
+"LPG/Dual fuel",4990,,1252,,4166,,55603,,11519,,46818,,224504,,104086,,452943,,
+"Petrol",239445,,99431,,350656,,1609580,,1359867,,2809571,,3555126,,4138355,,14162023,,
+"Electric",1309,,18,,251,,635,,181,,173,,1695,,455,,4705,,
+"Diesel",34754,,53879,,92751,,506790,,213915,,868959,,724551,,852190,,3347782,,
+"Not Applicable",25009,,13460,,9158,,347539,,19456,,523546,,493494,,279068,,1710736,,
+"Total",320914,,189330,,559724,,2659160,,1676678,,4627860,,5259096,,6020951,,21313721,,
+
+"Dataset: Motor Vehicle Census, 2014, TableBuilder"
+
+"INFO","Cells in this table have been randomly adjusted to avoid the release of confidential data. Discrepancies may occur between sums of the component items and totals."
+"INFO","Continuous variables in this table have been randomly adjusted to avoid the release of confidential data."
+
+
+Symbol,Description
+"#","No scaling applied"
+
+
+"Copyright Commonwealth of Australia, 2021, see abs.gov.au/copyright"
+"ABS data licensed under Creative Commons, see abs.gov.au/ccby"
