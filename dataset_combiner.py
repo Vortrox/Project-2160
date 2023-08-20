@@ -38,7 +38,8 @@ def read_csv_section(filepath: str) -> DataFrame:
 
 if __name__ == "__main__":
     datasets = []
-    for i in range(2013, 2021 + 1):
+    year_range = range(2013, 2021 + 1)
+    for i in year_range:
         filepath = f'./Datasets/motor_vehicle_fuel_vs_state_{i}.csv'
         result_dataframe = read_csv_section(filepath)
 
@@ -48,31 +49,43 @@ if __name__ == "__main__":
     all_rows = set()
     all_columns = set()
     for df in datasets:
-        all_rows.update(df.index)
-        all_columns.update(df.columns)
+        all_rows.update(list(df["State"]))
+        all_columns.update(c for c in df.columns if c != "State" and not c.endswith(" - Annotations") and c != 'Unnamed: 19')
+
+    year_frames = {i: {} for i in year_range}
+    for df, year in zip(datasets, year_range):
+        year_frames[year] = {c: {r:0 for r in all_rows} for c in all_columns}
+
 
     # Create a 3D DataFrame filled with 0
     shape = (len(all_rows), len(all_columns), len(datasets))
     result_data = np.zeros(shape, dtype=int)
 
     # Fill in the cells with values from the DataFrames
-    for i, df in enumerate(datasets):
-        for row_idx, row in enumerate(all_rows):
-            for col_idx, col in enumerate(all_columns):
-                if col == "State":
+    # for i, df in enumerate(datasets):
+    #     for row_idx, row in enumerate(df.index):
+    #         for col_idx, col in enumerate(c for c in df.columns if c in all_columns):
+    for df, year in zip(datasets, year_range):
+        # Column
+        for state in year_frames[year].keys():
+            # Row
+            for fuel_type in year_frames[year][state].keys():
+                fuel_type_idx = df[df["State"] == fuel_type].index
+                n_vehicles_array = df.loc[fuel_type_idx, state].values
+                if n_vehicles_array.size == 0:
                     continue
+                year_frames[year][state][fuel_type] = n_vehicles_array[0]
 
-                if row in df.index and col in df.columns:
-                    if type(df.loc[row, col]) != str and np.isnan(df.loc[row, col]):
-                        result_data[row_idx, col_idx, i] = 0
-                    else:
-                        result_data[row_idx, col_idx, i] = df.loc[row, col]
+    # Convert the dictionary to a pandas DataFrame
+    frames = []
+    for year, frame_data in year_frames.items():
+        frame = pd.DataFrame.from_dict(frame_data, orient='index')
+        frames.append(frame)
 
-    # Create a MultiIndex for the columns
-    multi_columns = pd.MultiIndex.from_tuples([(col, idx) for col in all_columns for idx in range(len(datasets))],
-                                              names=['Column', 'DF Index'])
+    # Concatenate the frames along the third axis (depth)
+    result_df = pd.concat(frames, axis=1, keys=year_frames.keys())
 
-    # Create a 3D DataFrame using the result_data and multi_columns
-    result_df = pd.DataFrame(result_data.reshape(shape[0], -1), index=list(all_rows), columns=multi_columns)
+    # Fill missing values with 0
+    result_df = result_df.fillna(0)
 
     print(result_df)
