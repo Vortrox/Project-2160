@@ -3,6 +3,7 @@ from io import StringIO
 import pandas as pd
 from pandas import DataFrame
 import re
+import numpy as np
 
 def read_csv_section(filepath: str) -> DataFrame:
     # Read the contents of the CSV file as a regular text file
@@ -33,10 +34,45 @@ def read_csv_section(filepath: str) -> DataFrame:
     return df
 
 
-for i in range(2013, 2021 + 1):
-    filepath = f'./Datasets/motor_vehicle_fuel_vs_state_{i}.csv'
-    result_dataframe = read_csv_section(filepath)
-    if result_dataframe is not None:
-        print(result_dataframe)
-    else:
-        print("Regex pattern didn't match in the file.")
+
+
+if __name__ == "__main__":
+    datasets = []
+    for i in range(2013, 2021 + 1):
+        filepath = f'./Datasets/motor_vehicle_fuel_vs_state_{i}.csv'
+        result_dataframe = read_csv_section(filepath)
+
+        datasets.append(result_dataframe)
+
+    # Identify unique row and column indices from all DataFrames
+    all_rows = set()
+    all_columns = set()
+    for df in datasets:
+        all_rows.update(df.index)
+        all_columns.update(df.columns)
+
+    # Create a 3D DataFrame filled with 0
+    shape = (len(all_rows), len(all_columns), len(datasets))
+    result_data = np.zeros(shape, dtype=int)
+
+    # Fill in the cells with values from the DataFrames
+    for i, df in enumerate(datasets):
+        for row_idx, row in enumerate(all_rows):
+            for col_idx, col in enumerate(all_columns):
+                if col == "State":
+                    continue
+
+                if row in df.index and col in df.columns:
+                    if type(df.loc[row, col]) != str and np.isnan(df.loc[row, col]):
+                        result_data[row_idx, col_idx, i] = 0
+                    else:
+                        result_data[row_idx, col_idx, i] = df.loc[row, col]
+
+    # Create a MultiIndex for the columns
+    multi_columns = pd.MultiIndex.from_tuples([(col, idx) for col in all_columns for idx in range(len(datasets))],
+                                              names=['Column', 'DF Index'])
+
+    # Create a 3D DataFrame using the result_data and multi_columns
+    result_df = pd.DataFrame(result_data.reshape(shape[0], -1), index=list(all_rows), columns=multi_columns)
+
+    print(result_df)
